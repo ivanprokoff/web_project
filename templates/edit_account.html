@@ -2,7 +2,7 @@
 
 {% block content %}
 <br>
-    <h1 align="center">Регистрация</h1>
+    <h1 align="center">Редактирование профиля</h1>
 <br>
     <form action="" method="post" class="login_form">
         {{ form.hidden_tag() }}
@@ -55,24 +55,6 @@
             {{ form.phone_number.label }}<br>
             {{ form.phone_number(class="form-control", type="phone_number") }}<br>
             {% for error in form.phone_number.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(class="form-control", type="password") }}<br>
-            {% for error in form.password.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password_check.label }}<br>
-            {{ form.password_check(class="form-control", type="password") }}<br>
-            {% for error in form.password_check.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>

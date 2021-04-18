@@ -87,7 +87,7 @@ def reqister():
         smtpObj.quit()
         print('Письмо отправлено')
         return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form, h1='Регистрация', pass_=True,)
+    return render_template('register.html', title='Регистрация', form=form)
 
 
 @app.route('/faq')
@@ -118,6 +118,8 @@ def edit_profile(username):
         else:
             abort(404)
     if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.username == username).first()
         if user:
             user.username = form.username.data
             user.name = form.name.data
@@ -129,9 +131,9 @@ def edit_profile(username):
             return redirect(f'/{username}')
         else:
             abort(404)
-    return render_template('register.html',
+    return render_template('edit_account.html',
                            title='Редактирование профиля',
-                           form=form, h1='Редактировать профиль')
+                           form=form)
 
 
 if __name__ == '__main__':
