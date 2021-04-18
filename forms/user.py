@@ -20,4 +20,4 @@ class RegisterForm(FlaskForm):
     phone_number = StringField('Номер телефона', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_check = PasswordField('Повторите пароль', validators=[DataRequired()])
-    submit = SubmitField('Зарегистрироваться')
+    submit = SubmitField('Вперед!')

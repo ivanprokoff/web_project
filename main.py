@@ -34,9 +34,9 @@ def logout():
     return redirect("/")
 
 
-@app.route('/', methods=['GET', 'POST'])
-def jobs():
-    return render_template('main.html', title='Главная')
+@app.route('/')
+def base():
+    return render_template('main.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -60,12 +60,12 @@ def reqister():
     if form.validate_on_submit():
         if form.password.data != form.password_check.data:
             return render_template('register.html', title='Регистрация',
-                                   form=form,
+                                   form=form, pass_=True,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.username == form.username.data).first():
             return render_template('register.html', title='Регистрация',
-                                   form=form,
+                                   form=form, pass_=True,
                                    message="Такой пользователь уже есть")
         user = User(
             username=form.username.data,
@@ -87,7 +87,51 @@ def reqister():
         smtpObj.quit()
         print('Письмо отправлено')
         return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form)
+    return render_template('register.html', title='Регистрация', form=form, h1='Регистрация', pass_=True,)
+
+
+@app.route('/faq')
+def faq():
+    return render_template('')
+
+
+@login_required
+@app.route('/<username>')
+def account(username):
+    return render_template('account.html')
+
+
+@login_required
+@app.route('/<username>/edit_profile')
+def edit_profile(username):
+    form = RegisterForm()
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.username == username).first()
+    if request.method == "GET":
+        if user:
+            form.username.data = user.username
+            form.name.data = user.name
+            form.surname.data = user.surname
+            form.work.data = user.work
+            form.email.data = user.email
+            form.phone_number.data = user.phone_number
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        if user:
+            user.username = form.username.data
+            user.name = form.name.data
+            user.surname = form.surname.data
+            user.work = form.work.data
+            user.email = form.email.data
+            user.phone_number = form.phone_number.data
+            db_sess.commit()
+            return redirect(f'/{username}')
+        else:
+            abort(404)
+    return render_template('register.html',
+                           title='Редактирование профиля',
+                           form=form, h1='Редактировать профиль')
 
 
 if __name__ == '__main__':

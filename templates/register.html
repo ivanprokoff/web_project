@@ -1,8 +1,10 @@
 {% extends "main.html" %}
 
 {% block content %}
-    <h1>Регистрация</h1>
-    <form action="" method="post">
+<br>
+    <h1 align="center">{{ h1 }}</h1>
+<br>
+    <form action="" method="post" class="login_form">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -57,6 +59,7 @@
                     {{ error }}
                 </div>
             {% endfor %}
+        {% if pass_ %}
         </p>
         <p>
             {{ form.password.label }}<br>
@@ -75,6 +78,7 @@
                     {{ error }}
                 </div>
             {% endfor %}
+        {% endif %}
         </p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         <div>{{ message }}</div>

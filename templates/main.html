@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ Title }}</title>
+    <title>{{ current_user.username }}</title>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
@@ -13,19 +13,34 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/main.css')}}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg fixed-top ">
-    <div class="navbar_text">Инфраструктурные листы</div>
-   <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<nav class="navbar">
+{% if current_user.is_authenticated %}
+    <div class="navbar_text">Инфраструктурные<br>листы</div>
+  <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     ≡
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-    <button class="dropdown-item" type="button">Главная</button>
-    <button class="dropdown-item" type="button">FAQ</button>
-    <button class="dropdown-item" type="button">Зарегистрироваться</button>
-    <button class="dropdown-item" type="button">Войти</button>
+    <button class="dropdown-item" type="button"><a href="/" class="href">Главная</a></button>
+    <button class="dropdown-item" type="button"><a href="/{{ current_user.username }}" class="href">Ваш профиль</a></button>
+    <button class="dropdown-item" type="button"><a href="/faq" class="href">Обратная связь</a></button>
+    <button class="dropdown-item" type="button"><a href="/logout" class="href">Выйти</a></button>
   </div>
 </div>
+{% else %}
+    <div class="navbar_text">Инфраструктурные<br>листы</div>
+   <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    ≡
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+    <button class="dropdown-item" type="button"><a href="/" class="href">Главная</a></button>
+    <button class="dropdown-item" type="button"><a href="/faq" class="href">Обратная связь</a></button>
+    <button class="dropdown-item" type="button"><a href="/register" class="href">Зарегистрироваться</a></button>
+    <button class="dropdown-item" type="button"><a href="/login" class="href">Войти</a></button>
+  </div>
+</div>
+{% endif %}
 </nav>
 {% block content %}
 {% endblock %}

@@ -1,0 +1,27 @@
+.navbar{
+background-color: #333333;
+}
+.navbar_text{
+color: #FFFFFF;
+}
+.href{
+  color: #000 !important;
+  text-decoration: none;
+}
+.list-group{
+display: inline-block;
+float: left;
+}
+.dropdown{
+display: inline-block;
+float: right;
+}
+form.login_form {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+    background-color: #e6e6e6;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 10px;
+}
