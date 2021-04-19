@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from data import db_session
 from data.users import User
 from forms.user import LoginForm, RegisterForm
+from forms.edit_profile import EditInfo
 from data import db_session
 
 import smtplib
@@ -13,9 +14,9 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-with open('secret_key.txt') as key_file:
-    key = key_file.read()
-app.config['SECRET_KEY'] = key
+'''with open('secret_key.txt') as key_file:
+    key = key_file.read()'''
+app.config['SECRET_KEY'] = 'key'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 db_session.global_init('db/data.db')
@@ -78,13 +79,13 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        with open('mail.txt') as mail_file:
-            login_password = mail_file.readlines()
-        smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+        # with open('mail.txt') as mail_file:
+            # login_password = mail_file.readlines()
+        '''smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
         smtpObj.starttls()
         smtpObj.login(login_password[0].strip(), login_password[1].strip())
         smtpObj.sendmail(login_password[0].strip(), form.email.data, "Thank you for choosing our service!")
-        smtpObj.quit()
+        smtpObj.quit()'''
         print('Письмо отправлено')
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
@@ -102,9 +103,10 @@ def account(username):
 
 
 @login_required
-@app.route('/<username>/edit_profile')
+@app.route('/<username>/edit_profile', methods=['GET', 'POST'])
 def edit_profile(username):
-    form = RegisterForm()
+    username = username
+    form = EditInfo()
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     if request.method == "GET":
@@ -120,20 +122,37 @@ def edit_profile(username):
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == username).first()
-        if user:
-            user.username = form.username.data
-            user.name = form.name.data
-            user.surname = form.surname.data
-            user.work = form.work.data
-            user.email = form.email.data
-            user.phone_number = form.phone_number.data
-            db_sess.commit()
-            return redirect(f'/{username}')
-        else:
-            abort(404)
+        print(1)
+        user.username = form.username.data
+        user.name = form.name.data
+        user.surname = form.surname.data
+        user.work = form.work.data
+        user.email = form.email.data
+        user.phone_number = form.phone_number.data
+        db_sess.commit()
+        new_username = form.username.data
+        return redirect(f'/{new_username}')
     return render_template('edit_account.html',
                            title='Редактирование профиля',
                            form=form)
+
+
+@login_required
+@app.route('/<username>/create')
+def create_new_list(username):
+    return render_template('new_list.html')
+
+
+@login_required
+@app.route('/<username>/lists')
+def lists(username):
+    return render_template('lists.html')
+
+
+@login_required
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
 
 
 if __name__ == '__main__':
