@@ -15,17 +15,17 @@
 <body>
 <nav class="navbar">
 {% if current_user.is_authenticated %}
-    <div class="navbar_text">Инфраструктурные<br>листы</div>
+<div class="navbar_text">Инфраструктурные<br>листы</div>
   <div class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     ≡
   </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
     <button class="dropdown-item" type="button"><a href="/" class="href">Главная</a></button>
     <button class="dropdown-item" type="button"><a href="/{{ current_user.username }}" class="href">Ваш профиль</a></button>
     <button class="dropdown-item" type="button"><a href="/faq" class="href">Обратная связь</a></button>
     <button class="dropdown-item" type="button"><a href="/logout" class="href">Выйти</a></button>
-  </div>
+</div>
 </div>
 {% else %}
     <div class="navbar_text">Инфраструктурные<br>листы</div>
