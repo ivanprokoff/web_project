@@ -1,0 +1,56 @@
+{% extends "main.html" %}
+
+{% block content %}
+<br>
+    <h1 align="center">Добавить наименование</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.thing.label }}<br>
+            {{ form.thing(class="form-control", type="thing") }}<br>
+            {% for error in form.thing.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.count.label }}<br>
+            {{ form.count(class="form-control", type="count") }}<br>
+            {% for error in form.count.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.multiplier.label }}<br>
+            {{ form.multiplier(class="form-control", type="multiplier") }}<br>
+            {% for error in form.multiplier.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.price.label }}<br>
+            {{ form.price(class="form-control", type="price") }}<br>
+            {% for error in form.price.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(class="form-control", type="description") }}<br>
+            {% for error in form.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <div>{{ message }}</div>
+    </form>
+{% endblock %}

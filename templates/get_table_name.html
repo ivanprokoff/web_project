@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+
+{% block content %}
+<br>
+    <h1 align="center">Создать новый лист</h1>
+<br>
+    <form action="" method="post" class="login_form">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.tablename.label }}<br>
+            {{ form.tablename(class="form-control", type="tablename") }}<br>
+            {% for error in form.tablename.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <div>{{ message }}</div>
+    </form>
+{% endblock %}

@@ -18,6 +18,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    item = orm.relation("Items", back_populates='creator')
+    all_lists = sqlalchemy.Column(sqlalchemy.String, unique=True)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

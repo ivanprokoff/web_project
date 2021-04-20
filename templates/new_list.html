@@ -1,1 +1,30 @@
 {% extends "main.html" %}
+
+{% block content %}
+<br>
+<h1 align="center">{{ name }}</h1>
+<table class="table table-bordered">
+<thead>
+  <tr>
+      <th scope="col" class="table-secondary">Thing</th>
+      <th scope="col" class="table-secondary">Count</th>
+      <th scope="col" class="table-secondary">Multiplier</th>
+      <th scope="col" class="table-secondary">Price</th>
+      <th scope="col" class="table-secondary">Description</th>
+  </tr>
+  </thead>
+{% for item in items %}
+  <tbody>
+    <tr>
+      <td class="table-primary">{{ item.thing }}</td>
+      <td class="table-primary">{{ item.count }}</td>
+      <td class="table-primary">{{ item.multiplier }}</td>
+      <td class="table-primary">{{ item.price }}</td>
+      <td class="table-danger">{{ item.description }}</td>
+  </tbody>
+<br>
+{% endfor %}
+</table>
+<br>
+<a class="btn btn-primary " href="/{{ current_user.username }}/list/{{ name }}/add">Добавить строку</a>
+{% endblock %}
