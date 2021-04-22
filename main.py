@@ -11,6 +11,7 @@ from forms.lists import GetTableName, AddNewItem
 import smtplib
 import pandas as pd
 import sqlite3
+import os
 
 
 app = Flask(__name__)
@@ -249,4 +250,5 @@ def lists(username):
 
 
 if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
