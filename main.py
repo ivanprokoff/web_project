@@ -182,9 +182,12 @@ def create(username):
 @login_required
 @app.route('/<username>/list/<list_name>', methods=['GET', 'POST'])
 def create_new_list(username, list_name):
+    summary = 0
     db_sess = db_session.create_session()
     items = db_sess.query(Items).filter(Items.list_name == list_name)
-    return render_template('new_list.html', title=f'{list_name}', items=items, name=list_name)
+    for i in items:
+        summary = summary + i.price
+    return render_template('new_list.html', title=f'{list_name}', items=items, name=list_name, summary=summary)
 
 
 @login_required
@@ -249,4 +252,4 @@ def lists(username):
 
 
 if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1')
+    app.run()

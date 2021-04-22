@@ -22,11 +22,13 @@
       <td class="table-primary">{{ item.price }}</td>
       <td class="table-danger">{{ item.description }}</td>
   </tbody>
-<br>
 {% endfor %}
+<br>
 </table>
+<h3>Общая стоимость: {{ summary }}</h3>
 <br>
 <a class="btn btn-primary " href="/{{ current_user.username }}/list/{{ name }}/add">Добавить строку</a>
 <a class="btn btn-success" href="/{{ current_user.username }}/list/{{ name }}/download">Выгрузить в excel</a>
 <a class="btn btn-danger" href="/{{ current_user.username }}/list/{{ name }}/delete">Удалить лист</a>
+<br>
 {% endblock %}

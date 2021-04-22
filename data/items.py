@@ -11,7 +11,7 @@ class Items(SqlAlchemyBase, SerializerMixin):
     thing = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     count = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     multiplier = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=1)
-    price = sqlalchemy.Column(sqlalchemy.String)
+    price = sqlalchemy.Column(sqlalchemy.Integer)
     description = sqlalchemy.Column(sqlalchemy.String)
     creator_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
