@@ -17,4 +17,3 @@ class Items(SqlAlchemyBase, SerializerMixin):
                                 sqlalchemy.ForeignKey("users.id"))
     creator = orm.relation('User')
     list_name = sqlalchemy.Column(sqlalchemy.String)
-    place = sqlalchemy.Column(sqlalchemy.Integer)

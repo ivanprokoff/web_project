@@ -1,15 +1,16 @@
-from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
+from flask import Flask, render_template, redirect, request, abort, send_from_directory
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
-from data import db_session
 from data.users import User
 from data.items import Items
-from forms.user import LoginForm, RegisterForm
+from forms.user import LoginForm, RegisterForm, FeedbackForm
 from forms.edit_profile import EditInfo
 from data import db_session
 from forms.lists import GetTableName, AddNewItem
 
 import smtplib
+import pandas as pd
+import sqlite3
 
 
 app = Flask(__name__)
@@ -50,7 +51,7 @@ def login():
         user = db_sess.query(User).filter(User.username == form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/")
+            return redirect(f"/{current_user.username}")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
@@ -88,14 +89,26 @@ def reqister():
         smtpObj.login(login_password[0].strip(), login_password[1].strip())
         smtpObj.sendmail(login_password[0].strip(), form.email.data, "Thank you for choosing our service!")
         smtpObj.quit()
-        print('Письмо отправлено')
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/faq')
-def faq():
-    return render_template('')
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    form = FeedbackForm()
+    if form.validate_on_submit():
+        message = form.message.data
+        message = current_user.username + ': ' + message
+        print(message)
+        with open('mail.txt') as mail_file:
+            login_password = mail_file.readlines()
+        smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+        smtpObj.starttls()
+        smtpObj.login(login_password[0].strip(), login_password[1].strip())
+        smtpObj.sendmail(login_password[0].strip(), login_password[0].strip(), message)
+        smtpObj.quit()
+        return redirect('/')
+    return render_template('feedback.html', form=form, title='Обратная свзяь')
 
 
 @login_required
@@ -144,6 +157,7 @@ def create(username):
     form = GetTableName()
     if form.validate_on_submit():
         tablename = form.tablename.data
+        print(tablename)
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == username).first()
         try:
@@ -194,6 +208,35 @@ def add(username, tablename):
 
 
 @login_required
+@app.route('/<username>/list/<string:tablename>/delete', methods=['GET', 'POST'])
+def delete_list(username, tablename):
+    db_sess = db_session.create_session()
+    items = db_sess.query(Items).filter(Items.list_name == tablename)
+    if items:
+        for i in items:
+            db_sess.delete(i)
+            db_sess.commit()
+    user = db_sess.query(User).filter(User.username == current_user.username).first()
+    user_lists = user.all_lists.split(',')
+    for i in user_lists:
+        if i == tablename:
+            user_lists.remove(i)
+    user_lists = ','.join(user_lists)
+    user.all_lists = user_lists
+    db_sess.commit()
+    return redirect(f'/{username}')
+
+
+@login_required
+@app.route('/<username>/list/<string:tablename>/download', methods=['GET', 'POST'])
+def download(username, tablename):
+    cnx = sqlite3.connect('db/data.db')
+    df = pd.read_sql_query("SELECT * FROM items", cnx)
+    df.to_excel(f'xlsx/{tablename}.xlsx')
+    return send_from_directory(f'xlsx', f'{tablename}.xlsx')
+
+
+@login_required
 @app.route('/<username>/my_lists')
 def lists(username):
     db_sess = db_session.create_session()
@@ -201,14 +244,8 @@ def lists(username):
     try:
         all_lists = user.all_lists.split(',')
     except Exception:
-        all_lists = []
+        all_lists = None
     return render_template('lists.html', items=all_lists)
-
-
-@login_required
-@app.route('/settings')
-def settings():
-    return render_template('settings.html')
 
 
 if __name__ == '__main__':

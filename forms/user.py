@@ -21,3 +21,8 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_check = PasswordField('Повторите пароль', validators=[DataRequired()])
     submit = SubmitField('Вперед!')
+
+
+class FeedbackForm(FlaskForm):
+    message = StringField('Введите текст обращения (на английском языке)', validators=[])
+    submit = SubmitField('Отправить')

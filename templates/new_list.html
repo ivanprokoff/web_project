@@ -27,4 +27,6 @@
 </table>
 <br>
 <a class="btn btn-primary " href="/{{ current_user.username }}/list/{{ name }}/add">Добавить строку</a>
+<a class="btn btn-success" href="/{{ current_user.username }}/list/{{ name }}/download">Выгрузить в excel</a>
+<a class="btn btn-danger" href="/{{ current_user.username }}/list/{{ name }}/delete">Удалить лист</a>
 {% endblock %}
