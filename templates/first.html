@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block content %}
+<br>
+<h1 align="center">Добро пожаловать на Infralists!</h1>
+<br>
+<h2 align="center">Бесплатно зарегистрируйте свой аккаунт и создайте первый лист уже сегодня</h2>
+<br>
+<div class="first-btn" align="center">
+{% if current_user.is_authenticated %}
+{% else %}
+<a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+<a class="btn btn-success" href="/login">Войти</a>
+</div>
+<br>
+{% endif %}
+{% endblock %}
