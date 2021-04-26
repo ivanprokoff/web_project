@@ -5,15 +5,22 @@ from data.users import User
 from data.items import Items
 from forms.user import LoginForm, RegisterForm, FeedbackForm
 from forms.edit_profile import EditInfo
-from data import db_session, api
+from data import db_session
+from flask_restful import Api
 from forms.lists import GetTableName, AddNewItem
-
 import smtplib
 import pandas as pd
 import sqlite3
 
+from data import users_resources
+
 
 app = Flask(__name__)
+api = Api(app)
+api.add_resource(users_resources.UserResource, '/api/users/<int:user_id>')
+api.add_resource(users_resources.UserListResource, '/api/users')
+
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -190,7 +197,7 @@ def create_new_list(username, list_name):
     db_sess = db_session.create_session()
     items = db_sess.query(Items).filter(Items.list_name == list_name)
     for i in items:
-        summary = summary + (i.price * int(i.multiplier))
+        summary = summary + (i.price * int(i.multiplier) * int(i.count))
     return render_template('new_list.html', title=f'{list_name}', items=items, name=list_name, summary=summary)
 
 
@@ -261,5 +268,4 @@ def lists(username):
 
 if __name__ == '__main__':
     db_session.global_init("db/data.db")
-    app.register_blueprint(api.blueprint)
     app.run()
