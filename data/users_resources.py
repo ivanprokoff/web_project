@@ -52,12 +52,12 @@ class UserListResource(Resource):
         args = parser.parse_args()
         session = db_session.create_session()
         user = User(
-            surname=args['username'],
+            username=args['username'],
             name=args['name'],
-            age=args['surname'],
-            position=args['work'],
-            speciality=args['email'],
-            address=args['phone_number'],
+            surname=args['surname'],
+            work=args['work'],
+            email=args['email'],
+            phone_number=args['phone_number'],
         )
         user.set_password(args['password'])
         session.add(user)
