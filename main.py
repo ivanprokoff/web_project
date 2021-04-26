@@ -17,9 +17,9 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-with open('secret_key.txt') as key_file:
-    key = key_file.read()
-app.config['SECRET_KEY'] = key
+'''with open('secret_key.txt') as key_file:
+    key = key_file.read()'''
+app.config['SECRET_KEY'] = '12345'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 db_session.global_init('db/data.db')
@@ -77,18 +77,18 @@ def reqister():
             surname=form.surname.data,
             work=form.work.data,
             email=form.email.data,
-            phone_number=form.phone_number.data
+            phone_number=form.phone_number.data,
         )
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        with open('mail.txt') as mail_file:
+        '''with open('mail.txt') as mail_file:
             login_password = mail_file.readlines()
         smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
         smtpObj.starttls()
         smtpObj.login(login_password[0].strip(), login_password[1].strip())
         smtpObj.sendmail(login_password[0].strip(), form.email.data, "Thank you for choosing our service!")
-        smtpObj.quit()
+        smtpObj.quit()'''
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -157,25 +157,29 @@ def create(username):
     form = GetTableName()
     if form.validate_on_submit():
         tablename = form.tablename.data
-        print(tablename)
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == username).first()
         try:
-            if tablename in user.all_lists:
-                return render_template('get_table_name.html', title='Создать новый лист',
-                                       form=form,
-                                       message="Такой лист уже есть")
+            if user.all_lists:
+                if tablename in user.all_lists:
+                    return render_template('get_table_name.html', title='Создать новый лист',
+                                           form=form,
+                                           message="Такой лист уже есть")
+                else:
+                    if user.all_lists is not None:
+                        user.all_lists = user.all_lists + ',' + tablename
+                        db_sess.commit()
+                    elif user.all_lists is None:
+                        user.all_lists = tablename
+                        db_sess.commit()
+                return redirect(f'/{username}/list/{tablename}')
             else:
-                if user.all_lists is not None:
-                    user.all_lists = user.all_lists + ',' + tablename
-                elif user.all_lists is None:
-                    user.all_lists = tablename
+                user.all_lists = tablename
                 db_sess.commit()
-            return redirect(f'/{username}/list/{tablename}')
-        except Exception:
-            user.all_lists = tablename + ','
-            db_sess.commit()
-            return redirect(f'/{username}/list/{tablename}')
+                return redirect(f'/{username}/list/{tablename}')
+        except Exception as ex:
+            print(ex)
+            return abort(404)
     return render_template('get_table_name.html', title='Создать новый лист', form=form)
 
 
@@ -186,7 +190,7 @@ def create_new_list(username, list_name):
     db_sess = db_session.create_session()
     items = db_sess.query(Items).filter(Items.list_name == list_name)
     for i in items:
-        summary = summary + i.price
+        summary = summary + (i.price * int(i.multiplier))
     return render_template('new_list.html', title=f'{list_name}', items=items, name=list_name, summary=summary)
 
 
@@ -211,20 +215,22 @@ def add(username, tablename):
 
 
 @login_required
-@app.route('/<username>/list/<string:tablename>/delete', methods=['GET', 'POST'])
+@app.route('/<username>/list/<tablename>/delete', methods=['GET', 'POST'])
 def delete_list(username, tablename):
     db_sess = db_session.create_session()
     items = db_sess.query(Items).filter(Items.list_name == tablename)
-    if items:
-        for i in items:
-            db_sess.delete(i)
-            db_sess.commit()
+    for i in items:
+        db_sess.delete(i)
+    db_sess.commit()
     user = db_sess.query(User).filter(User.username == current_user.username).first()
     user_lists = user.all_lists.split(',')
     for i in user_lists:
         if i == tablename:
             user_lists.remove(i)
-    user_lists = ','.join(user_lists)
+    if user_lists:
+        user_lists = ','.join(user_lists)
+    else:
+        user_lists = '_'
     user.all_lists = user_lists
     db_sess.commit()
     return redirect(f'/{username}')
@@ -246,6 +252,8 @@ def lists(username):
     user = db_sess.query(User).filter(User.username == username).first()
     try:
         all_lists = user.all_lists.split(',')
+        if '_' in all_lists:
+            all_lists.remove('_')
     except Exception:
         all_lists = None
     return render_template('lists.html', items=all_lists)
