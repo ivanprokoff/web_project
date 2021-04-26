@@ -5,7 +5,7 @@ from data.users import User
 from data.items import Items
 from forms.user import LoginForm, RegisterForm, FeedbackForm
 from forms.edit_profile import EditInfo
-from data import db_session
+from data import db_session, api
 from forms.lists import GetTableName, AddNewItem
 
 import smtplib
@@ -17,9 +17,9 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-'''with open('secret_key.txt') as key_file:
-    key = key_file.read()'''
-app.config['SECRET_KEY'] = '12345'
+with open('secret/secret_key.txt') as key_file:
+    key = key_file.read()
+app.config['SECRET_KEY'] = key
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 db_session.global_init('db/data.db')
@@ -82,13 +82,13 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        '''with open('mail.txt') as mail_file:
+        with open('secret/mail.txt') as mail_file:
             login_password = mail_file.readlines()
         smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
         smtpObj.starttls()
         smtpObj.login(login_password[0].strip(), login_password[1].strip())
         smtpObj.sendmail(login_password[0].strip(), form.email.data, "Thank you for choosing our service!")
-        smtpObj.quit()'''
+        smtpObj.quit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -100,7 +100,7 @@ def feedback():
         message = form.message.data
         message = current_user.username + ': ' + message
         print(message)
-        with open('mail.txt') as mail_file:
+        with open('secret/mail.txt') as mail_file:
             login_password = mail_file.readlines()
         smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
         smtpObj.starttls()
@@ -260,4 +260,6 @@ def lists(username):
 
 
 if __name__ == '__main__':
+    db_session.global_init("db/data.db")
+    app.register_blueprint(api.blueprint)
     app.run()
